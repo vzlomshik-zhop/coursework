@@ -134,7 +134,7 @@ class ClientApi {
 		//String s[];
 		this.dos = new DataOutputStream(cs.getOutputStream());
 		this.dis = new DataInputStream(cs.getInputStream());
-		MyThread mt = new MyThread(dis);
+		MyThread mt = new MyThread(this, dis);
 		mt.start();
 		/*while (!c.equals("exit")) {
 		 * c = sc.nextLine();
