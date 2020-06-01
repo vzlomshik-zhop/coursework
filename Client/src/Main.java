@@ -11,19 +11,89 @@ class Main {
 	}
 }
 
+class LoginForm extends JDialog {	
+	MyFrame frame;
+	String userName;
+
+	public LoginForm(MyFrame frame) {
+		super(frame, "Login");
+		this.frame = frame;
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setSize(new Dimension(400, 200));
+		getContentPane().add(createUI());
+		setResizable(false);
+		setVisible(true);
+	}
+
+    public JPanel createUI() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+		JPanel name = new JPanel();
+		name.setLayout(new BoxLayout(name, BoxLayout.X_AXIS));
+		JLabel nameLabel = new JLabel("Login:         ");
+		name.add(nameLabel);
+		name.add(Box.createHorizontalStrut(12));
+		JTextField login = new JTextField(15);
+		name.add(login);
+		JPanel password = new JPanel();
+		password.setLayout(new BoxLayout(password, BoxLayout.X_AXIS));
+		JLabel passwrdLabel = new JLabel("Password:");
+		password.add(passwrdLabel);
+		password.add(Box.createHorizontalStrut(12));
+		JTextField passwd = new JTextField(15);
+		password.add(passwd);
+		JPanel flow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+		JPanel grid = new JPanel(new GridLayout(1, 2, 5, 0));
+		JButton loginButton = new JButton("Log in");
+		loginButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.sendForm("login::" + nameLabel.getText() + "::" + passwrdLabel.getText());
+				userName = nameLabel.getText();
+			}
+		});
+		JButton signupButton = new JButton("Sign up");
+		signupButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.sendForm("signup::" + nameLabel.getText() + "::" + passwrdLabel.getText());
+				userName = nameLabel.getText();
+			}
+		});
+		grid.add(loginButton);
+		grid.add(signupButton);
+		flow.add(grid);
+		panel.add(name);
+		panel.add(Box.createVerticalStrut(12));
+		panel.add(password);
+		panel.add(Box.createVerticalStrut(17));
+		panel.add(flow);
+		return panel;
+	}
+
+	public void successfullyEntered() {
+		setVisible(false);
+		frame.getMessages(userName);
+		frame.setVisible(true);
+	}
+}
+
 class Messages {
 	HashMap<String, Vector<String>> msg;
+	Vector<String> users;
 	int msgAmount;
 
 	public Messages(int msgAmount) {
 		this.msg = new HashMap<String, Vector<String>>(msgAmount);
 		this.msgAmount = msgAmount;
+		users = new Vector<String>();
 	}
 
 	public void addMessage(String userName, String msg) {
 		Vector<String> tmsg = getMessagesFromTheUser(userName);
-		if (tmsg == null)
+		if (tmsg == null) {
 			tmsg = new Vector<String>(1);
+			users.add(userName);
+		}
 		tmsg.add(msg);
 		this.msg.put(userName, tmsg);
 		msgAmount++;
@@ -32,6 +102,28 @@ class Messages {
 	public Vector<String> getMessagesFromTheUser(String userName) {
 		return this.msg.get(userName);
 	}
+
+	public Vector<String> getUsers() {
+		return this.users;
+	}
+}
+
+class UserButton extends JButton {
+	String userName;
+	MyFrame frame;
+
+	public UserButton(String userName, MyFrame frame) {
+		super(userName);
+		setPreferredSize(new Dimension(196, 100));
+		setMaximumSize(new Dimension(196, 100));
+		this.userName = userName;
+		this.frame = frame;
+		addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setUser(userName);
+			}
+		});
+	}
 }
 
 class MyFrame extends JFrame {
@@ -39,6 +131,9 @@ class MyFrame extends JFrame {
 	String currentUser;
 	String user;
 	Messages msg;
+	JPanel chats;
+	JTextArea text;
+	LoginForm form;
 
 	public MyFrame() {
 		super("chatik");
@@ -48,13 +143,16 @@ class MyFrame extends JFrame {
 		this.msg = null;
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(1280, 720);
+		setVisible(false);
+		setResizable(false);
+		getContentPane().add(createUI());
 	}
 
-	public void createUI() {
-		JPanel chats = new JPanel();
+	public JSplitPane createUI() {
+		chats = new JPanel();
 		chats.setLayout(new BoxLayout(chats, BoxLayout.Y_AXIS));
 		JScrollPane scrollpane = new JScrollPane(chats);
-		JTextArea text = new JTextArea();
+		text = new JTextArea();
 		////////////////
 		text.append("");
 		text.setDisabledTextColor(new Color(0, 0, 0));
@@ -73,8 +171,8 @@ class MyFrame extends JFrame {
 		JButton sendbutton = new JButton("SEND");
 		sendbutton.addActionListener(new ActionListener() {
 										public void actionPerformed(ActionEvent e) {
-											if (currentUser != null) {
-												client.createSendingForm(currentUser, inputfield.getText());
+											if (user != null) {
+												sendForm("send::" + currentUser + "::" + user + " ::" + inputfield.getText());
 												inputfield.setText("");
 											}
 										}
@@ -95,23 +193,56 @@ class MyFrame extends JFrame {
 		chatbox.setEnabled(false);
 		chatbox.setDividerSize(0);
 		chatbox.setDividerLocation(500);
-		getContentPane().add(splitpane);
+		return splitpane;
 	}
 
 	public void init() {
 		try {
 			this.client = new ClientApi("localhost", 3128);
-			client.start();
-			getMessages();
+			form = new LoginForm(this);
+			client.start(currentUser, this);
 		} catch(Exception e) {
+			client.processAnswer("lol");
 			System.out.println("Unable to connect to the server");
-			setVisible(true);
-			//System.exit(0);
 		}
 	}
+
+	public void setUser(String user) {
+		this.user = user;
+		showMessagesFromUser(user);
+	}
 	
-	public void getMessages() {
-		this.client.getMessagesFromServer(currentUser); 
+	public void getMessages(String user) {
+		this.client.getMessagesFromServer(user); 
+	}
+
+	public void setMessages(Messages msg) {
+		this.msg = msg;
+	}
+
+	public void showMessagesFromUser(String user) {
+		text.setText("");
+		Vector<String> tmsg = msg.getMessagesFromTheUser(user);
+		Iterator<String> iter = tmsg.iterator();
+		while (iter.hasNext()) {
+			text.append(iter.next() + "\n");
+		}
+	}
+
+	public void createButtons() {
+		Iterator<String> iter = msg.getUsers().iterator();
+		while (iter.hasNext()) {
+			chats.add(new UserButton(iter.next(), this));
+		}
+		//setVisible(true);
+	}
+
+	public void sendForm(String request) {
+		client.send(request);
+	}
+
+	public LoginForm getLoginForm() {
+		return this.form;
 	}
 }
 
@@ -121,21 +252,25 @@ class ClientApi {
 	Socket cs;
 	DataOutputStream dos;
 	DataInputStream dis;
+	Messages msg;
+	String userName;
+	int msgAmount;
+	MyFrame frame;
 
 	public ClientApi(String ip, int port) {
 		this.ip = ip;
 		this.port = port;
 	}
 
-	public void start() throws Exception {
+	public void start(String userName, MyFrame frame) throws Exception {
+		this.frame = frame;
 		this.cs = new Socket(ip, port);
-		//Scanner sc = new Scanner(System.in);
-		//String c = "";
-		//String s[];
 		this.dos = new DataOutputStream(cs.getOutputStream());
 		this.dis = new DataInputStream(cs.getInputStream());
 		MyThread mt = new MyThread(this, dis);
 		mt.start();
+		this.userName = userName;
+		//this.frame = frame;
 		/*while (!c.equals("exit")) {
 		 * c = sc.nextLine();
 		 * s = c.trim().split("::");
@@ -163,9 +298,9 @@ class ClientApi {
 		//sc.close();
 		}
 
-	public void createSendingForm(String currentUser, String text) {
+	public void send(String request) {
 		try {
-			dos.writeUTF("send::" + currentUser + "::" + text);
+			dos.writeUTF(request);
 		} catch (Exception e) {
 		}
 	}
@@ -180,6 +315,32 @@ class ClientApi {
 
 	public void processAnswer(String ans) {
 		//TBD process answer from the server and add to the msg object
+		String s[] = ans.trim().split("::");
+		if (s[0].equals("MessageAmount")) {
+			msgAmount = Integer.valueOf(s[1]);
+			this.msg = new Messages(msgAmount);
+		}
+		if (s[0].equals("MessageFrom")) {
+			msg.addMessage(s[1], s[2]);
+			msgAmount--;
+			if (msgAmount == 0) {
+				frame.setMessages(msg);
+				frame.createButtons();
+			}
+		if (s[0].equals("Successfullyentered")) {
+			frame.getLoginForm().successfullyEntered();
+		}
+		/*this.msg = new Messages(5);
+		msg.addMessage("qwert", "221118");
+		msg.addMessage("qwert1", "22123131238\r\n\r\n");
+		msg.addMessage("qwert2", "221231238\r\n\r\n\r");
+		msg.addMessage("qwert3", "2212318");
+		msg.addMessage("qwert4", "221231231238");
+		frame.setMessages(msg);
+		frame.createButtons();
+		//if (s[0].equals()) {
+
+		//}*/
 	}
 }
 
