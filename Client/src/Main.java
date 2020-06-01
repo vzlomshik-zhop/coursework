@@ -3,6 +3,7 @@ import java.net.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 
 class Main {
 	public static void main(String argv[]) throws Exception {
@@ -10,14 +11,41 @@ class Main {
 	}
 }
 
+class Messages {
+	HashMap<String, Vector<String>> msg;
+	int msgAmount;
+
+	public Messages(int msgAmount) {
+		this.msg = new HashMap<String, Vector<String>>(msgAmount);
+		this.msgAmount = msgAmount;
+	}
+
+	public void addMessage(String userName, String msg) {
+		Vector<String> tmsg = getMessagesFromTheUser(userName);
+		if (tmsg == null)
+			tmsg = new Vector<String>(1);
+		tmsg.add(msg);
+		this.msg.put(userName, tmsg);
+		msgAmount++;
+	}
+
+	public Vector<String> getMessagesFromTheUser(String userName) {
+		return this.msg.get(userName);
+	}
+}
+
 class MyFrame extends JFrame {
-	Client client;
+	ClientApi client;
 	String currentUser;
+	String user;
+	Messages msg;
 
 	public MyFrame() {
 		super("chatik");
 		createUI();
-		this.currentUser = "23";
+		this.currentUser = null;
+		this.user = null;
+		this.msg = null;
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(1280, 720);
 	}
@@ -72,24 +100,29 @@ class MyFrame extends JFrame {
 
 	public void init() {
 		try {
-			this.client = new Client("localhost", 3128);
+			this.client = new ClientApi("localhost", 3128);
 			client.start();
+			getMessages();
 		} catch(Exception e) {
 			System.out.println("Unable to connect to the server");
 			setVisible(true);
 			//System.exit(0);
 		}
 	}
+	
+	public void getMessages() {
+		this.client.getMessagesFromServer(currentUser); 
+	}
 }
 
-class Client {
+class ClientApi {
 	int port;
 	String ip;
 	Socket cs;
 	DataOutputStream dos;
 	DataInputStream dis;
 
-	public Client(String ip, int port) {
+	public ClientApi(String ip, int port) {
 		this.ip = ip;
 		this.port = port;
 	}
@@ -136,19 +169,33 @@ class Client {
 		} catch (Exception e) {
 		}
 	}
+
+	public void getMessagesFromServer(String userName) {
+		try {
+			this.dos.writeUTF("getMessagesFor::" + userName + "\n");
+		} catch (Exception e) {
+			System.out.println("An error has occured while sending a request");
+		}
+	}
+
+	public void processAnswer(String ans) {
+		//TBD process answer from the server and add to the msg object
+	}
 }
 
-class MyThread extends Thread{
+class MyThread extends Thread {
 	DataInputStream dis;
+	ClientApi client;
 
-	public MyThread(DataInputStream dis) {
+	public MyThread(ClientApi client, DataInputStream dis) {
+		this.client = client;
 		this.dis = dis;
 	}
 
 	public void run() {
 		while (true) {
 			try {
-				System.out.println(dis.readUTF());
+				client.processAnswer(dis.readUTF());
 			} catch(Exception e) {
 			}
 		}
