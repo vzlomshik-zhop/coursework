@@ -187,7 +187,9 @@ class DataBase {
     public void sendRegistrationSignal(String cn) {
         Iterator<String> iter = getUsernames(cn).iterator();
         while (iter.hasNext()) {
-            vm.add(new Msg("", cn, iter.next()));
+            String user = iter.next();
+            if (isOnline(user))
+                vm.add(new Msg("", cn, user));
         }
     }
 }

@@ -100,6 +100,15 @@ class Messages {
 		msgAmount++;
 	}
 
+	public boolean isPresent(String user) {
+		Iterator<String> iter = users.iterator();
+		boolean f = false;
+		while (iter.hasNext() && !f) {
+			f = (iter.next().equals(user));
+		}
+		return f;
+	}
+
 	public Vector<String> getMessagesFromTheUser(String userName) {
 		return this.msg.get(userName);
 	}
@@ -239,6 +248,11 @@ class MyFrame extends JFrame {
 		setVisible(true);
 	}
 
+	public void addButton(String user) {
+		chats.add(new UserButton(user, this));
+		revalidate();
+	}
+
 	public void sendForm(String request) {
 		client.send(request);
 	}
@@ -297,6 +311,8 @@ class ClientApi {
 	public void processAnswer(String ans) {
 		String s[] = ans.trim().split("::");
 		if (s[0].equals("newmessage")) {
+			if (!msg.isPresent(s[1]))
+				frame.addButton(s[1]);
 			if (s.length == 2)
 				msg.addMessage(s[1], "");
 			else
