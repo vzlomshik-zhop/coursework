@@ -1,0 +1,5 @@
+{
+    "java.debug.logLevel": "info",
+    "java.checkstyle.configuration": "/C:/Users/Макс/Downloads/custom.xml",
+    "java.checkstyle.version": "8.33"
+}
