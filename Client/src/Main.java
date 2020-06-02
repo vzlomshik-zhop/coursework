@@ -48,15 +48,17 @@ class LoginForm extends JDialog {
 		JButton loginButton = new JButton("Log in");
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frame.sendForm("login::" + nameLabel.getText() + "::" + passwrdLabel.getText());
-				userName = nameLabel.getText();
+				frame.setCurrentUser(login.getText());
+				frame.sendForm("login::" + login.getText() + "::" + passwd.getText());
+				userName = login.getText();
 			}
 		});
 		JButton signupButton = new JButton("Sign up");
 		signupButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frame.sendForm("signup::" + nameLabel.getText() + "::" + passwrdLabel.getText());
-				userName = nameLabel.getText();
+				frame.setCurrentUser(login.getText());
+				frame.sendForm("signup::" + login.getText() + "::" + passwd.getText());
+				userName = login.getText();
 			}
 		});
 		grid.add(loginButton);
@@ -82,9 +84,8 @@ class Messages {
 	Vector<String> users;
 	int msgAmount;
 
-	public Messages(int msgAmount) {
-		this.msg = new HashMap<String, Vector<String>>(msgAmount);
-		this.msgAmount = msgAmount;
+	public Messages() {
+		this.msg = new HashMap<String, Vector<String>>();
 		users = new Vector<String>();
 	}
 
@@ -130,7 +131,6 @@ class MyFrame extends JFrame {
 	ClientApi client;
 	String currentUser;
 	String user;
-	Messages msg;
 	JPanel chats;
 	JTextArea text;
 	LoginForm form;
@@ -140,7 +140,6 @@ class MyFrame extends JFrame {
 		createUI();
 		this.currentUser = null;
 		this.user = null;
-		this.msg = null;
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(1280, 720);
 		setVisible(false);
@@ -170,13 +169,13 @@ class MyFrame extends JFrame {
 		lowermenu.setLayout(new BoxLayout(lowermenu, BoxLayout.X_AXIS));
 		JButton sendbutton = new JButton("SEND");
 		sendbutton.addActionListener(new ActionListener() {
-										public void actionPerformed(ActionEvent e) {
-											if (user != null) {
-												sendForm("send::" + currentUser + "::" + user + " ::" + inputfield.getText());
-												inputfield.setText("");
-											}
-										}
-									});
+			public void actionPerformed(ActionEvent e) {
+				if (user != null) {
+					sendForm("send::" + user + "::" + inputfield.getText());
+					inputfield.setText("");
+				}
+			}
+		});
 		lowermenu.add(inputfield);
 		lowermenu.add(sendbutton);
 		////////////////////
@@ -199,12 +198,15 @@ class MyFrame extends JFrame {
 	public void init() {
 		try {
 			this.client = new ClientApi("localhost", 3128);
-			form = new LoginForm(this);
 			client.start(currentUser, this);
-		} catch(Exception e) {
-			client.processAnswer("lol");
+			form = new LoginForm(this);
+		} catch (Exception e) {
 			System.out.println("Unable to connect to the server");
 		}
+	}
+
+	public void setCurrentUser(String userName) {
+		this.currentUser = userName;
 	}
 
 	public void setUser(String user) {
@@ -212,29 +214,35 @@ class MyFrame extends JFrame {
 		showMessagesFromUser(user);
 	}
 	
+	public String getUser() {
+		return user;
+	}
+
+	public void addText(String text) {
+		if (!text.equals(""))
+			this.text.append(text + "\n");
+	}
+
 	public void getMessages(String user) {
 		this.client.getMessagesFromServer(user); 
 	}
 
-	public void setMessages(Messages msg) {
-		this.msg = msg;
-	}
 
 	public void showMessagesFromUser(String user) {
 		text.setText("");
-		Vector<String> tmsg = msg.getMessagesFromTheUser(user);
+		Vector<String> tmsg = client.getMessages().getMessagesFromTheUser(user);
 		Iterator<String> iter = tmsg.iterator();
 		while (iter.hasNext()) {
-			text.append(iter.next() + "\n");
+			addText(iter.next());
 		}
 	}
 
 	public void createButtons() {
-		Iterator<String> iter = msg.getUsers().iterator();
+		Iterator<String> iter = client.getMessages().getUsers().iterator();
 		while (iter.hasNext()) {
 			chats.add(new UserButton(iter.next(), this));
 		}
-		//setVisible(true);
+		setVisible(true);
 	}
 
 	public void sendForm(String request) {
@@ -264,6 +272,7 @@ class ClientApi {
 
 	public void start(String userName, MyFrame frame) throws Exception {
 		this.frame = frame;
+		this.msg = new Messages();
 		this.cs = new Socket(ip, port);
 		this.dos = new DataOutputStream(cs.getOutputStream());
 		this.dis = new DataInputStream(cs.getInputStream());
@@ -307,27 +316,46 @@ class ClientApi {
 
 	public void getMessagesFromServer(String userName) {
 		try {
-			this.dos.writeUTF("getMessagesFor::" + userName + "\n");
+			this.dos.writeUTF("getmessagesfor::" + userName + "\n");
 		} catch (Exception e) {
 			System.out.println("An error has occured while sending a request");
 		}
 	}
 
+	/*public void getUsersFromServer() {
+		try {
+			this.dos.writeUTF("getusers" + "\n");
+		} catch (Exception e) {
+			System.out.println("An error has occured while sending a request");
+		}
+	}*/
+
+	public Messages getMessages() {
+		return this.msg;
+	}
+
 	public void processAnswer(String ans) {
 		//TBD process answer from the server and add to the msg object
 		String s[] = ans.trim().split("::");
-		if (s[0].equals("MessageAmount")) {
-			msgAmount = Integer.valueOf(s[1]);
-			this.msg = new Messages(msgAmount);
+		System.out.println(ans);
+		if (s[0].equals("newmessage")) {
+			if (s.length == 2)
+				msg.addMessage(s[1], "");
+			else
+				msg.addMessage(s[1], s[2]);
+			if (frame.getUser().equals(s[1]))
+				frame.addText(s[2]);
 		}
-		if (s[0].equals("MessageFrom")) {
-			msg.addMessage(s[1], s[2]);
-			msgAmount--;
-			if (msgAmount == 0) {
-				frame.setMessages(msg);
-				frame.createButtons();
-			}
-		if (s[0].equals("Successfullyentered")) {
+		if (s[0].equals("messagefrom")) {
+			if (s.length == 2)
+				msg.addMessage(s[1], "");
+			else
+				msg.addMessage(s[1], s[2]);
+		}
+		if  (s[0].equals("messagescopied")) {
+			frame.createButtons();
+		}
+		if (s[0].equals("successfullyentered")) {
 			frame.getLoginForm().successfullyEntered();
 		}
 		/*this.msg = new Messages(5);
