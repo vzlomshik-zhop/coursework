@@ -64,6 +64,15 @@ class DataBase {
         online.removeElement(cn);
     }
 
+    public boolean isOnline(String userName) {
+        Iterator<String> iter = online.iterator();
+        boolean f = false;
+        while (iter.hasNext() && !f) {
+            f = (iter.next().equals(userName));
+        }
+        return f;
+    }
+
     public boolean checkRight(String l, String p, boolean tf) {
         try {
             boolean f = false;
@@ -170,7 +179,8 @@ class DataBase {
 
     public void addMessage(String mesg, String cn, String receiver) {
         addMessageToFile(cn, receiver, mesg);
-        vm.add(new Msg(cn + ": " + mesg, cn, receiver));
+        if (isOnline(receiver))
+            vm.add(new Msg(cn + ": " + mesg, cn, receiver));
         vm.add(new Msg("You: " + mesg, receiver, cn));
     }
 

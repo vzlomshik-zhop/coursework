@@ -115,8 +115,8 @@ class UserButton extends JButton {
 
 	public UserButton(String userName, MyFrame frame) {
 		super(userName);
-		setPreferredSize(new Dimension(196, 100));
-		setMaximumSize(new Dimension(196, 100));
+		setPreferredSize(new Dimension(181, 100));
+		setMaximumSize(new Dimension(181, 100));
 		this.userName = userName;
 		this.frame = frame;
 		addActionListener(new ActionListener() {
@@ -152,20 +152,16 @@ class MyFrame extends JFrame {
 		chats.setLayout(new BoxLayout(chats, BoxLayout.Y_AXIS));
 		JScrollPane scrollpane = new JScrollPane(chats);
 		text = new JTextArea();
-		////////////////
 		text.append("");
 		text.setDisabledTextColor(new Color(0, 0, 0));
 		text.setEditable(false);
-		///////////////
 		JScrollPane textpane = new JScrollPane(text);
 		JPanel lowermenu = new JPanel();
 		JTextArea inputfield = new JTextArea();
-		////////////////
 		inputfield.setWrapStyleWord(true);
 		inputfield.setAutoscrolls(true);
 		inputfield.setLineWrap(true);
 		inputfield.setPreferredSize(new Dimension(500, 76));
-		////////////////
 		lowermenu.setLayout(new BoxLayout(lowermenu, BoxLayout.X_AXIS));
 		JButton sendbutton = new JButton("SEND");
 		sendbutton.addActionListener(new ActionListener() {
@@ -178,12 +174,10 @@ class MyFrame extends JFrame {
 		});
 		lowermenu.add(inputfield);
 		lowermenu.add(sendbutton);
-		////////////////////
 		inputfield.setWrapStyleWord(true);
 		inputfield.setAutoscrolls(true);
 		inputfield.setLineWrap(true);
 		inputfield.setPreferredSize(new Dimension(500, 76));
-		////////////////////
 		JSplitPane chatbox = new JSplitPane(JSplitPane.VERTICAL_SPLIT, textpane, lowermenu);
 		JSplitPane splitpane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollpane, chatbox);
 		splitpane.setEnabled(false);
@@ -279,33 +273,7 @@ class ClientApi {
 		MyThread mt = new MyThread(this, dis);
 		mt.start();
 		this.userName = userName;
-		//this.frame = frame;
-		/*while (!c.equals("exit")) {
-		 * c = sc.nextLine();
-		 * s = c.trim().split("::");
-		 * if (s[0].equals("online") | s[0].equals("help") | s[0].equals("exit"))
-		 * dos.writeUTF(c + "\n");
-		 * else {
-		 * if (s[0].equals("log in") | s[0].equals("sign up")) {
-		 * if (s.length == 3)
-		 * dos.writeUTF(c + "\n");
-		 * else
-		 * System.out.println("Parameters don't match!\n");
-		 * } else
-		 * if (s[0].equals("send")) {
-		 * if (s.length >= 3)
-		 * dos.writeUTF(c + "\n");
-		 * else
-		 * System.out.println("Parameters don't match!\n");
-		 * } else
-		 * dos.writeUTF("null" + "\n");
-		 * }
-		 * }*/
-		//dis.close();
-		//dos.close();
-		//cs.close();
-		//sc.close();
-		}
+	}
 
 	public void send(String request) {
 		try {
@@ -322,22 +290,12 @@ class ClientApi {
 		}
 	}
 
-	/*public void getUsersFromServer() {
-		try {
-			this.dos.writeUTF("getusers" + "\n");
-		} catch (Exception e) {
-			System.out.println("An error has occured while sending a request");
-		}
-	}*/
-
 	public Messages getMessages() {
 		return this.msg;
 	}
 
 	public void processAnswer(String ans) {
-		//TBD process answer from the server and add to the msg object
 		String s[] = ans.trim().split("::");
-		System.out.println(ans);
 		if (s[0].equals("newmessage")) {
 			if (s.length == 2)
 				msg.addMessage(s[1], "");
@@ -358,17 +316,6 @@ class ClientApi {
 		if (s[0].equals("successfullyentered")) {
 			frame.getLoginForm().successfullyEntered();
 		}
-		/*this.msg = new Messages(5);
-		msg.addMessage("qwert", "221118");
-		msg.addMessage("qwert1", "22123131238\r\n\r\n");
-		msg.addMessage("qwert2", "221231238\r\n\r\n\r");
-		msg.addMessage("qwert3", "2212318");
-		msg.addMessage("qwert4", "221231231238");
-		frame.setMessages(msg);
-		frame.createButtons();
-		//if (s[0].equals()) {
-
-		//}*/
 	}
 }
 
