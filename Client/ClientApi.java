@@ -9,14 +9,14 @@ public class ClientApi {
     private DataOutputStream dos;
     private DataInputStream dis;
     private Messages msg;
-    private MyFrame frame;
+    private Window frame;
 
     public ClientApi(String ip, int port) {
         this.ip = ip;
         this.port = port;
     }
 
-    public void start(MyFrame frame) throws Exception {
+    public void start(Window frame) throws Exception {
         this.frame = frame;
         this.msg = new Messages();
         this.cs = new Socket(ip, port);

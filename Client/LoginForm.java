@@ -13,10 +13,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class LoginForm extends JDialog {
-    private MyFrame frame;
+    private Window frame;
     private String userName;
 
-    public LoginForm(MyFrame frame) {
+    public LoginForm(Window frame) {
         super(frame, "Login");
         this.frame = frame;
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);

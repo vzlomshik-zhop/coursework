@@ -1,5 +1,5 @@
-import java.net.Socket;
 import java.io.DataOutputStream;
+import java.net.Socket;
 
 public class MessageChecker extends Thread {
     private Socket s;

@@ -1,25 +1,29 @@
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.awt.Dimension;
-import javax.swing.BoxLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.Vector;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 
-public class MyFrame extends JFrame {
+public class Window extends JFrame {
+    /**
+     *
+     */
+    private static final long serialVersionUID = -517906046295582614L;
     private ClientApi client;
     private String user;
     private JPanel chats;
     private JTextArea text;
     private LoginForm form;
 
-    public MyFrame() {
+    public Window() {
         super("chatik");
         this.user = null;
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -32,18 +36,17 @@ public class MyFrame extends JFrame {
     public JSplitPane createUI() {
         chats = new JPanel();
         chats.setLayout(new BoxLayout(chats, BoxLayout.Y_AXIS));
-        JScrollPane scrollpane = new JScrollPane(chats);
+
         text = new JTextArea();
         text.append("");
         text.setDisabledTextColor(new Color(0, 0, 0));
         text.setEditable(false);
-        JScrollPane textpane = new JScrollPane(text);
-        JPanel lowermenu = new JPanel();
         JTextArea inputfield = new JTextArea();
         inputfield.setWrapStyleWord(true);
         inputfield.setAutoscrolls(true);
         inputfield.setLineWrap(true);
         inputfield.setPreferredSize(new Dimension(500, 76));
+        JPanel lowermenu = new JPanel();
         lowermenu.setLayout(new BoxLayout(lowermenu, BoxLayout.X_AXIS));
         JButton sendbutton = new JButton("SEND");
         sendbutton.addActionListener(new ActionListener() {
@@ -60,6 +63,8 @@ public class MyFrame extends JFrame {
         inputfield.setAutoscrolls(true);
         inputfield.setLineWrap(true);
         inputfield.setPreferredSize(new Dimension(500, 76));
+        JScrollPane scrollpane = new JScrollPane(chats);
+        JScrollPane textpane = new JScrollPane(text);
         JSplitPane chatbox = new JSplitPane(JSplitPane.VERTICAL_SPLIT, textpane, lowermenu);
         JSplitPane splitpane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollpane, chatbox);
         splitpane.setEnabled(false);

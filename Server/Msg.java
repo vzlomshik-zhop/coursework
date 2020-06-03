@@ -12,6 +12,7 @@ public class Msg {
     public String getMessage() {
         return this.message;
     }
+    
     public String getSender() {
         return this.sender;
     }

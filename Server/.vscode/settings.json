@@ -1,5 +1,5 @@
 {
     "java.debug.logLevel": "info",
-    "java.checkstyle.configuration": "/C:/Users/Макс/Downloads/custom.xml",
-    "java.checkstyle.version": "8.33"
+    "java.checkstyle.configuration": "/C:/Users/Макс/Downloads/google_checks.xml",
+    "java.checkstyle.version": "8.18"
 }

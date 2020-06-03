@@ -2,8 +2,8 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.Scanner;
 import java.util.Iterator;
+import java.util.Scanner;
 import java.util.Vector;
 
 public class DataBase {
@@ -92,8 +92,7 @@ public class DataBase {
             fos.close();
             dos1.close();
             fos1.close();
-        } catch (Exception e) {
-        }
+        } catch(Exception e) {}
     }
 
     public Msg checkMessage(String cn) {
