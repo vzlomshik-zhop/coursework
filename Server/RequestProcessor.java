@@ -4,14 +4,14 @@ import java.net.Socket;
 import java.util.Iterator;
 import java.util.Vector;
 
-public class MyThread extends Thread {
+public class RequestProcessor extends Thread {
     private Socket s;
     private String clientName;
     private DataBase db;
     private DataInputStream dis;
     private DataOutputStream dos;
 
-    public MyThread(Socket s, String sn, DataBase db) {
+    public RequestProcessor(Socket s, String sn, DataBase db) {
         this.db = db;
         this.s = s;
         this.clientName = "";

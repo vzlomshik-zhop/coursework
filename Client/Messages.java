@@ -5,7 +5,6 @@ import java.util.Iterator;
 public class Messages {
     private HashMap<String, Vector<String>> msg;
     private Vector<String> users;
-    private int msgAmount;
 
     public Messages() {
         this.msg = new HashMap<String, Vector<String>>();
@@ -20,7 +19,6 @@ public class Messages {
         }
         tmsg.add(msg);
         this.msg.put(userName, tmsg);
-        msgAmount++;
     }
 
     public boolean isPresent(String user) {

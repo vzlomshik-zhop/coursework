@@ -1,14 +1,14 @@
 import java.net.Socket;
 import java.io.DataOutputStream;
 
-public class MyThread1 extends Thread {
+public class MessageChecker extends Thread {
     private Socket s;
     private DataBase db;
     private Msg m;
-    private MyThread mt;
+    private RequestProcessor processor;
 
-    public MyThread1(Socket s, DataBase db, MyThread mt) {
-        this.mt = mt;
+    public MessageChecker(Socket s, DataBase db, RequestProcessor processor) {
+        this.processor = processor;
         this.db = db;
         this.s = s;
     }
@@ -16,8 +16,8 @@ public class MyThread1 extends Thread {
     public void run() {
         try {
             DataOutputStream dos = new DataOutputStream(s.getOutputStream());
-            while (mt.isAlive()) {
-                if ((m = db.checkMessage(mt.getClientName())) != null) {
+            while (processor.isAlive()) {
+                if ((m = db.checkMessage(processor.getClientName())) != null) {
                     dos.writeUTF("newmessage::" + m.getSender() + "::" + m.getMessage() + "\n");
                 }
                 Thread.sleep(500);

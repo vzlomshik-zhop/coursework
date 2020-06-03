@@ -22,8 +22,7 @@ public class ClientApi {
         this.cs = new Socket(ip, port);
         this.dos = new DataOutputStream(cs.getOutputStream());
         this.dis = new DataInputStream(cs.getInputStream());
-        MyThread mt = new MyThread(this, dis);
-        mt.start();
+        new MessageChecker(this, dis).start();
     }
 
     public void send(String request) {

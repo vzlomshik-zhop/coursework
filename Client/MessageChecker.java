@@ -1,10 +1,10 @@
 import java.io.DataInputStream;
 
-public class MyThread extends Thread {
+public class MessageChecker extends Thread {
     private DataInputStream dis;
     private ClientApi client;
 
-    public MyThread(ClientApi client, DataInputStream dis) {
+    public MessageChecker(ClientApi client, DataInputStream dis) {
         this.client = client;
         this.dis = dis;
     }

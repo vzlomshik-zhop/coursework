@@ -14,9 +14,9 @@ class Server {
         db = new DataBase();
         while (!ss.isClosed()) {
             Socket s = ss.accept();
-            MyThread mt = new MyThread(s, s.getInetAddress().toString(), db);
-            mt.start();
-            new MyThread1(s, db, mt).start();
+            RequestProcessor processor = new RequestProcessor(s, s.getInetAddress().toString(), db);
+            processor.start();
+            new MessageChecker(s, db, processor).start();
         }
         ss.close();
     }
