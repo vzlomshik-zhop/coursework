@@ -1,3 +1,5 @@
+package app;
+
 public class Msg {
     private String message;
     private String sender;

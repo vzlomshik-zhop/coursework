@@ -1,3 +1,5 @@
+package app;
+
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,8 +56,7 @@ public class DataBase {
             }
             sc.close();
             return f;
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
         return false;
     }
 
@@ -71,8 +72,7 @@ public class DataBase {
             }
             dos.close();
             fos.close();
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
         return false;
     }
 

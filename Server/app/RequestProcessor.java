@@ -1,3 +1,5 @@
+package app;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
@@ -11,7 +13,7 @@ public class RequestProcessor extends Thread {
     private DataInputStream dis;
     private DataOutputStream dos;
 
-    public RequestProcessor(Socket s, String sn, DataBase db) {
+    public RequestProcessor(Socket s, DataBase db) {
         this.db = db;
         this.s = s;
         this.clientName = "";
