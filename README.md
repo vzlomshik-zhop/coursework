@@ -18,4 +18,4 @@ The client consists of 6 separate classes(excluding Main):
 # How to run
 1. Launch the server
 2. Launch the client
-## Note: both the client and the server run on the localhost
+## Note: both the client and the server are running on the localhost
