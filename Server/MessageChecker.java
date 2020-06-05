@@ -4,7 +4,7 @@ import java.net.Socket;
 public class MessageChecker extends Thread {
     private Socket s;
     private DataBase db;
-    private Msg m;
+    private Msg message;
     private RequestProcessor processor;
 
     public MessageChecker(Socket s, DataBase db, RequestProcessor processor) {
@@ -17,8 +17,8 @@ public class MessageChecker extends Thread {
         try {
             DataOutputStream dos = new DataOutputStream(s.getOutputStream());
             while (processor.isAlive()) {
-                if ((m = db.checkMessage(processor.getClientName())) != null) {
-                    dos.writeUTF("newmessage::" + m.getSender() + "::" + m.getMessage() + "\n");
+                if ((message = db.checkMessage(processor.getClientName())) != null) {
+                    dos.writeUTF("newmessage::" + message.getSender() + "::" + message.getMessage() + "\n");
                 }
                 Thread.sleep(500);
             }
