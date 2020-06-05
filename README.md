@@ -9,11 +9,10 @@ The server consist of 5 separate classes(excluding Main):
 5. MessageChecker - a thread, that searches for new messages in the database for current user
 
 # Client
-The client consists of 6 separate classes(excluding Main):
-1-3. Graphic components(window, buttons(represent users) and login window)
-4. Messages - a structure for storing messages, directed to the current user
-5. ClientApi - a class, that manages information exchange and processing between a client and the server
-6. MessageChecker - a thread for reading responses from the server
+The client consists of 3 separate functional classes(excluding Main and 3 graphic components):
+1. Messages - a structure for storing messages, directed to the current user
+2. ClientApi - a class, that manages information exchange and processing between a client and the server
+3. MessageChecker - a thread for reading responses from the server
 
 # How to run
 1. Launch the server
