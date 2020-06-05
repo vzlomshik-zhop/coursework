@@ -1,5 +1,5 @@
 # A simple client-server application written on Java.
-Both client and server use sockets to establish connection between each other and threads to perform task without blocking the application.
+Both the client and the server use sockets to establish connection between each other and threads to perform task without blocking the application.
 # Server
 The server consist of 5 separate classes(excluding Main):
 1. Server - a class that is responsible for establishing connections and dedicating 2 threads for each connection
@@ -14,3 +14,8 @@ The client consists of 6 separate classes(excluding Main):
 4. Messages - a structure for storing messages, directed to the current user
 5. ClientApi - a class, that manages information exchange and processing between a client and the server
 6. MessageChecker - a thread for reading responses from the server
+
+# How to run
+1. Launch the server
+2. Launch the client
+## Note: both the client and the server run on the localhost
